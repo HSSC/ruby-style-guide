@@ -154,22 +154,6 @@ Translations of the guide are available in the following languages:
   puts 'foo', 'bar' # this applies to puts in particular
   ```
 
-* <a name="single-line-classes"></a>
-  Prefer a single-line format for class definitions with no body.
-<sup>[[link](#single-line-classes)]</sup>
-
-  ```Ruby
-  # bad
-  class FooError < StandardError
-  end
-
-  # okish
-  class FooError < StandardError; end
-
-  # good
-  FooError = Class.new(StandardError)
-  ```
-
 * <a name="no-single-line-methods"></a>
   Avoid single-line methods. Although they are somewhat popular in the wild,
   there are a few peculiarities about their definition syntax that make their
@@ -196,13 +180,6 @@ Translations of the guide are available in the following languages:
   end
   ```
 
-  One exception to the rule are empty-body methods.
-
-  ```Ruby
-  # good
-  def no_op; end
-  ```
-
 * <a name="spaces-operators"></a>
   Use spaces around operators, after commas, colons and semicolons, around `{`
   and before `}`. Whitespace might be (mostly) irrelevant to the Ruby
@@ -213,7 +190,6 @@ Translations of the guide are available in the following languages:
   sum = 1 + 2
   a, b = 1, 2
   [1, 2, 3].each { |e| puts e }
-  class FooError < StandardError; end
   ```
 
   The only exception, regarding operators, is the exponent operator:
@@ -233,9 +209,6 @@ Translations of the guide are available in the following languages:
   ```Ruby
   # good - space after { and before }
   { one: 1, two: 2 }
-
-  # good - no space after { and before }
-  {one: 1, two: 2}
   ```
 
   The first variant is slightly more readable (and arguably more
@@ -454,19 +427,6 @@ Translations of the guide are available in the following languages:
     good - leading `.` (Option A) and trailing `.` (Option B).
 <sup>[[link](#consistent-multi-line-chains)]</sup>
 
-  * **(Option A)** When continuing a chained method invocation on
-    another line keep the `.` on the second line.
-
-    ```Ruby
-    # bad - need to consult first line to understand second line
-    one.two.three.
-      four
-
-    # good - it's immediately clear what's going on the second line
-    one.two.three
-      .four
-    ```
-
   * **(Option B)** When continuing a chained method invocation on another line,
     include the `.` on the first line to indicate that the
     expression continues.
@@ -506,14 +466,6 @@ Translations of the guide are available in the following languages:
         body: source.text)
   end
 
-  # good
-  def send_mail(source)
-    Mailer.deliver(to: 'bob@example.com',
-                   from: 'us@example.com',
-                   subject: 'Important message',
-                   body: source.text)
-  end
-
   # good (normal indent)
   def send_mail(source)
     Mailer.deliver(
@@ -540,12 +492,6 @@ Translations of the guide are available in the following languages:
     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam'
   ]
 
-  # good
-  menu_item =
-    ['Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam',
-     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam']
-  ```
-
 * <a name="underscores-in-numerics"></a>
   Add underscores to large numeric literals to improve their readability.
 <sup>[[link](#underscores-in-numerics)]</sup>
@@ -559,8 +505,7 @@ Translations of the guide are available in the following languages:
   ```
 
 * <a name="rdoc-conventions"></a>
-    Use RDoc and its conventions for API documentation.  Don't put an
-    empty line between the comment block and the `def`.
+    Use RDoc and its conventions for API documentation.
 <sup>[[link](#rdoc-conventions)]</sup>
 
 * <a name="80-character-limits"></a>
@@ -1005,9 +950,6 @@ Translations of the guide are available in the following languages:
 
   # good
   do_something unless some_condition
-
-  # another good option
-  some_condition || do_something
   ```
 
 * <a name="no-else-with-unless"></a>
@@ -1050,25 +992,26 @@ Note that there is an exception to this rule, namely [safe assignment in
 condition](#safe-assignment-in-condition).
 
 * <a name="no-multiline-while-do"></a>
-  Do not use `while/until condition do` for multi-line `while/until`.
+  Use `while/until condition do` for multi-line `while/until`. The do` 
+  is consistent with other loop statements such as .each do, etc.
 <sup>[[link](#no-multiline-while-do)]</sup>
 
   ```Ruby
   # bad
-  while x > 5 do
-    # body omitted
-  end
-
-  until x > 5 do
-    # body omitted
-  end
-
-  # good
   while x > 5
     # body omitted
   end
 
   until x > 5
+    # body omitted
+  end
+
+  # good
+  while x > 5 do
+    # body omitted
+  end
+
+  until x > 5 do
     # body omitted
   end
   ```
@@ -1098,26 +1041,6 @@ condition](#safe-assignment-in-condition).
   # good
   do_something until some_condition
   ```
-
-* <a name="infinite-loop"></a>
-  Use `Kernel#loop` instead of `while/until` when you need an infinite loop.
-<sup>[[link](#infinite-loop)]</sup>
-
-    ```ruby
-    # bad
-    while true
-      do_something
-    end
-
-    until false
-      do_something
-    end
-
-    # good
-    loop do
-      do_something
-    end
-    ```
 
 * <a name="loop-with-break"></a>
   Use `Kernel#loop` with `break` rather than `begin/end/until` or
@@ -1297,12 +1220,13 @@ condition](#safe-assignment-in-condition).
   ```
 
 * <a name="no-self-unless-required"></a>
-  Avoid `self` where not required. (It is only required when calling a self
-  write accessor.)
+  2 Cases:
+    1. Use self consistently, which emphasizes the instance's interactions. 
+    2. Do not use self at all except when required to assign an attribute.
 <sup>[[link](#no-self-unless-required)]</sup>
 
   ```Ruby
-  # bad
+  # Consistent use of self. Emphasizes the interaction with the current instance.
   def ready?
     if self.last_reviewed_at > self.last_updated_at
       self.worker.update(self.content, self.options)
@@ -1315,59 +1239,20 @@ condition](#safe-assignment-in-condition).
   def ready?
     if last_reviewed_at > last_updated_at
       worker.update(content, options)
-      self.status = :in_progress
+      self.status = :in_progress #Keep in mind, here we would usually use
+                                 #update_attributes 
     end
     status == :verified
   end
   ```
 
-* <a name="no-shadowing"></a>
-  As a corollary, avoid shadowing methods with local variables unless they are
-  both equivalent.
-<sup>[[link](#no-shadowing)]</sup>
-
-  ```Ruby
-  class Foo
-    attr_accessor :options
-
-    # ok
-    def initialize(options)
-      self.options = options
-      # both options and self.options are equivalent here
-    end
-
-    # bad
-    def do_something(options = {})
-      unless options[:when] == :later
-        output(self.options[:message])
-      end
-    end
-
-    # good
-    def do_something(params = {})
-      unless params[:when] == :later
-        output(options[:message])
-      end
-    end
-  end
-  ```
-
 * <a name="safe-assignment-in-condition"></a>
-  Don't use the return value of `=` (an assignment) in conditional expressions
-  unless the assignment is wrapped in parentheses. This is a fairly popular
-  idiom among Rubyists that's sometimes referred to as *safe assignment in
-  condition*.
+  Don't use the return value of `=` (an assignment) in conditional expressions.
 <sup>[[link](#safe-assignment-in-condition)]</sup>
 
   ```Ruby
   # bad (+ a warning)
   if v = array.grep(/foo/)
-    do_something(v)
-    ...
-  end
-
-  # good (MRI would still complain, but RuboCop won't)
-  if (v = array.grep(/foo/))
     do_something(v)
     ...
   end
@@ -1549,12 +1434,6 @@ condition](#safe-assignment-in-condition).
   def foo(x)
     bar(x)
   end
-
-  # also good
-  def foo(x)
-    bar = ->(y) { ... }
-    bar.call(x)
-  end
   ```
 
 * <a name="lambda-multi-line"></a>
@@ -1564,6 +1443,9 @@ condition](#safe-assignment-in-condition).
 
   ```Ruby
   # bad
+  #Comment by Kyle: I actually really like this style. The {} block format 
+  #is written similarly to other blocks used within the application. To me,
+  #it's more readable than the examples below.
   l = lambda { |a, b| a + b }
   l.call(1, 2)
 
@@ -1695,14 +1577,6 @@ no parameters.
   '%d %d' % [20, 10]
   # => '20 10'
 
-  # good
-  sprintf('%d %d', 20, 10)
-  # => '20 10'
-
-  # good
-  sprintf('%{first} %{second}', first: 20, second: 10)
-  # => '20 10'
-
   format('%d %d', 20, 10)
   # => '20 10'
 
@@ -1752,9 +1626,6 @@ no parameters.
   ```Ruby
   # bad
   do_something if x >= 1000 && x <= 2000
-
-  # good
-  do_something if (1000..2000).include?(x)
 
   # good
   do_something if x.between?(1000, 2000)
@@ -1832,53 +1703,6 @@ no parameters.
   Avoid the use of flip-flops.
 <sup>[[link](#no-flip-flops)]</sup>
 
-* <a name="no-nested-conditionals"></a>
-  Avoid use of nested conditionals for flow of control.
-<sup>[[link](#no-nested-conditionals)]</sup>
-
-  Prefer a guard clause when you can assert invalid data. A guard clause
-  is a conditional statement at the top of a function that bails out as
-  soon as it can.
-
-  ```Ruby
-  # bad
-  def compute_thing(thing)
-    if thing[:foo]
-      update_with_bar(thing)
-      if thing[:foo][:bar]
-        partial_compute(thing)
-      else
-        re_compute(thing)
-      end
-    end
-  end
-
-  # good
-  def compute_thing(thing)
-    return unless thing[:foo]
-    update_with_bar(thing[:foo])
-    return re_compute(thing) unless thing[:foo][:bar]
-    partial_compute(thing)
-  end
-  ```
-
-  Prefer `next` in loops instead of conditional blocks.
-
-  ```Ruby
-  # bad
-  [0, 1, 2, 3].each do |item|
-    if item > 1
-      puts item
-    end
-  end
-
-  # good
-  [0, 1, 2, 3].each do |item|
-    next unless item > 1
-    puts item
-  end
-  ```
-
 * <a name="map-find-select-reduce-size"></a>
   Prefer `map` over `collect`, `find` over `detect`, `select` over `find_all`,
   `reduce` over `inject` and `size` over `length`. This is not a hard
@@ -1912,6 +1736,7 @@ no parameters.
 
   ```Ruby
   # bad
+  #Comment by Kyle: I think this is more readable
   all_songs = users.map(&:songs).flatten.uniq
 
   # good
@@ -1928,6 +1753,7 @@ no parameters.
 
   ```Ruby
   # bad
+  #Comment by Kyle: I think this is more readable
   array.reverse.each { ... }
 
   # good
@@ -2469,42 +2295,6 @@ no parameters.
   attr_reader :one, :two, :three
   ```
 
-* <a name="struct-new"></a>
-  Consider using `Struct.new`, which defines the trivial accessors,
-  constructor and comparison operators for you.
-<sup>[[link](#struct-new)]</sup>
-
-  ```Ruby
-  # good
-  class Person
-    attr_accessor :first_name, :last_name
-
-    def initialize(first_name, last_name)
-      @first_name = first_name
-      @last_name = last_name
-    end
-  end
-
-  # better
-  Person = Struct.new(:first_name, :last_name) do
-  end
-  ```
-
-* <a name="no-extend-struct-new"></a>
-  Don't extend an instance initialized by `Struct.new`. Extending it introduces
-  a superfluous class level and may also introduce weird errors if the file is
-  required multiple times.
-<sup>[[link](#no-extend-struct-new)]</sup>
-
-  ```Ruby
-  # bad
-  class Person < Struct.new(:first_name, :last_name)
-  end
-
-  # good
-  Person = Struct.new(:first_name, :last_name)
-  ```
-
 * <a name="factory-methods"></a>
   Consider adding factory methods to provide additional sensible ways to
   create instances of a particular class.
@@ -2519,12 +2309,24 @@ no parameters.
   ```
 
 * <a name="duck-typing"></a>
-  Prefer [duck-typing](https://en.wikipedia.org/wiki/Duck_typing) over
-  inheritance.
+  Prefer inheritance over [duck-typing](https://en.wikipedia.org/wiki/Duck_typing).
 <sup>[[link](#duck-typing)]</sup>
 
   ```Ruby
   # bad
+  class Duck
+    def speak
+      puts 'Quack! Quack'
+    end
+  end
+
+  class Dog
+    def speak
+      puts 'Bark! Bark!'
+    end
+  end
+
+  # good
   class Animal
     # abstract method
     def speak
@@ -2541,20 +2343,7 @@ no parameters.
   # extend superclass
   class Dog < Animal
     def speak
-      puts 'Bau! Bau!'
-    end
-  end
-
-  # good
-  class Duck
-    def speak
-      puts 'Quack! Quack'
-    end
-  end
-
-  class Dog
-    def speak
-      puts 'Bau! Bau!'
+      puts 'Bark! Bark!'
     end
   end
   ```
@@ -2985,31 +2774,27 @@ resource cleanup when possible.
   ```
 
 * <a name="percent-w"></a>
-  Prefer `%w` to the literal array syntax when you need an array of words
-  (non-empty strings without spaces and special characters in them).  Apply this
-  rule only to arrays with two or more elements.
+  Prefer literal array syntax when you need an array of words rather than `%w`
 <sup>[[link](#percent-w)]</sup>
 
   ```Ruby
   # bad
-  STATES = ['draft', 'open', 'closed']
+  STATES = %w(draft open closed)
 
   # good
-  STATES = %w(draft open closed)
+  STATES = ['draft', 'open', 'closed']
   ```
 
 * <a name="percent-i"></a>
-  Prefer `%i` to the literal array syntax when you need an array of symbols
-  (and you don't need to maintain Ruby 1.9 compatibility). Apply this rule only
-  to arrays with two or more elements.
+  Prefer literal array syntax when you need an array of symbols rather than `%i` 
 <sup>[[link](#percent-i)]</sup>
 
   ```Ruby
   # bad
-  STATES = [:draft, :open, :closed]
+  STATES = %i(draft open closed)
 
   # good
-  STATES = %i(draft open closed)
+  STATES = [:draft, :open, :closed]
   ```
 
 * <a name="no-trailing-array-commas"></a>
@@ -3135,7 +2920,9 @@ resource cleanup when possible.
 
   ```Ruby
   heroes = { batman: 'Bruce Wayne', superman: 'Clark Kent' }
+
   # bad - if we make a mistake we might not spot it right away
+  # Comment by Kyle: I think this makes sense, but I prefer the "bad" way for visual purposes
   heroes[:batman] # => 'Bruce Wayne'
   heroes[:supermann] # => nil
 
@@ -3152,6 +2939,7 @@ resource cleanup when possible.
   batman = { name: 'Bruce Wayne', is_evil: false }
 
   # bad - if we just use || operator with falsy value we won't get the expected result
+  # Comment by Kyle: I think this makes sense, but I prefer the "bad" way for visual purposes
   batman[:is_evil] || true # => true
 
   # good - fetch work correctly with falsy values
@@ -3181,6 +2969,7 @@ resource cleanup when possible.
 
   ```Ruby
   # bad
+  # Comment by Kyle: I think this makes sense, but I prefer the "bad" way for visual purposes
   email = data['email']
   username = data['nickname']
 
@@ -3245,9 +3034,6 @@ resource cleanup when possible.
 
   # good
   email_with_name = "#{user.name} <#{user.email}>"
-
-  # good
-  email_with_name = format('%s <%s>', user.name, user.email)
   ```
 
 * <a name="pad-string-interpolation"></a>
@@ -3278,17 +3064,6 @@ resource cleanup when possible.
 
     # good
     name = 'Bozhidar'
-    ```
-
-  * **(Option B)** Prefer double-quotes unless your string literal
-    contains `"` or escape characters you want to suppress.
-
-    ```Ruby
-    # bad
-    name = 'Bozhidar'
-
-    # good
-    name = "Bozhidar"
     ```
 
   The string literals in this guide are aligned with the first style.
